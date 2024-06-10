@@ -37,3 +37,84 @@ const users = [
 ];
 
 console.log(User.userAgeComparison(newUser, users[2]));
+
+// Esercizio 2
+
+class Pet {
+  constructor(petName, ownerName, species, breed) {
+    this.petName = petName;
+    this.ownerName = ownerName;
+    this.species = species;
+    this.breed = breed;
+  }
+}
+
+class Petlist {
+  constructor() {
+    this.pets = [];
+  }
+  addPet(pet) {
+    this.pets.push(pet);
+  }
+}
+
+const addForm = document.getElementById("aggiungiForm");
+const listaAnimali = document.getElementById("listaAnimali");
+const petList = new Petlist();
+addForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const petName = document.getElementById("petName").value;
+  const ownerName = document.getElementById("ownerName").value;
+  const species = document.getElementById("species").value;
+  const breed = document.getElementById("breed").value;
+  const pet = new Pet(petName, ownerName, species, breed);
+  petList.addPet(pet);
+  aggiornaListaAnimali();
+  addForm.reset();
+  checkSameOwner();
+});
+console.log(petList);
+function aggiornaListaAnimali() {
+  listaAnimali.innerHTML = "";
+  for (const pet of petList.pets) {
+    const petDiv = document.createElement("div");
+    petDiv.innerHTML = `
+      <strong>Nome Animale:</strong> ${pet.petName}<br>
+      <strong>Nome Proprietario:</strong> ${pet.ownerName}<br>
+      <strong>Specie:</strong> ${pet.species}<br>
+      <strong>Razza:</strong> ${pet.breed}`;
+    listaAnimali.appendChild(petDiv);
+  }
+}
+
+function checkSameOwner() {
+  let sameOwner = false;
+  const owners = {};
+  for (const pet of petList.pets) {
+    if (!owners[pet.ownerName]) {
+      owners[pet.ownerName] = [pet.petName];
+    } else {
+      owners[pet.ownerName].push(pet.petName);
+      sameOwner = true;
+    }
+  }
+  const sameOwnerDiv = document.createElement("div");
+  sameOwnerDiv.innerHTML = `<strong> Qualche animale con lo stesso padrone?</strong> ${
+    sameOwner ? "Yes" : "NO"
+  }`;
+
+  if (sameOwner) {
+    const ownerList = document.createElement("ul");
+    for (const ownerName in owners) {
+      if (owners[ownerName].length > 1) {
+        const ownerItem = document.createElement("li");
+        ownerItem.innerHTML = `${ownerName}: ${owners[ownerName].join(",")}`;
+        ownerList.appendChild(ownerItem);
+        localStorage.setItem("lista", ownerItem.innerText);
+      }
+    }
+    sameOwnerDiv.appendChild(ownerList);
+  }
+  listaAnimali.appendChild(sameOwnerDiv);
+}
